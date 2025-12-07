@@ -75,5 +75,26 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <script>
+        @if(session('success'))
+            Swal.fire({
+                icon: 'success',
+                title: '¡Excelente!',
+                text: "{{ session('success') }}",
+                confirmButtonColor: '#764ba2'
+            });
+        @endif
+
+        @if(session('error'))
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: "{{ session('error') }}",
+                confirmButtonColor: '#d33'
+            });
+        @endif
+    </script>
 </body>
 </html>

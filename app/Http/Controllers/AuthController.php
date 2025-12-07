@@ -96,7 +96,6 @@ class AuthController extends Controller
         if (!$user) {
             return redirect('/login')->withErrors(['email' => 'Usuario no encontrado.']);
         }
-
         $user->status = 'activo';
         $user->save();
 

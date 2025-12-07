@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Vehicle; 
+use App\Models\Vehicle;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -13,7 +13,7 @@ class VehicleController extends Controller
     public function index()
     {
         // Obtiene solo los vehículos del usuario conectado
-        $vehicles = Auth::user()->vehicles; 
+        $vehicles = Auth::user()->vehicles;
         return view('vehicles.index', compact('vehicles'));
     }
 
@@ -26,7 +26,6 @@ class VehicleController extends Controller
     // Guardar en la BD
     public function store(Request $request)
     {
-
         $request->validate([
             'placa' => 'required|unique:vehicles',
             'marca' => 'required',
@@ -44,7 +43,10 @@ class VehicleController extends Controller
         }
 
         // 3. Crear vehículo
-        Auth::user()->vehicles()->create([
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+
+        $user->vehicles()->create([
             'placa' => $request->placa,
             'marca' => $request->marca,
             'modelo' => $request->modelo,
@@ -56,14 +58,21 @@ class VehicleController extends Controller
 
         return redirect()->route('vehicles.index')->with('success', 'Vehículo registrado correctamente.');
     }
-    
-    // Eliminar
+
+
+    // Elimina un vehiculo con su validación 
     public function destroy(Vehicle $vehicle)
     {
+
         if ($vehicle->user_id !== Auth::id()) {
             abort(403);
         }
+
+        if ($vehicle->rides()->exists()) {
+            return back()->with('error', 'No puedes eliminar este vehículo porque tiene viajes asociados en el historial.');
+        }
+
         $vehicle->delete();
-        return back()->with('success', 'Vehículo eliminado.');
+        return back()->with('success', 'Vehículo eliminado correctamente.');
     }
 }

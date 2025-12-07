@@ -12,9 +12,9 @@ return new class extends Migration
     {
         Schema::create('reservations', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade'); // El Pasajero
-            $table->foreignId('ride_id')->constrained()->onDelete('cascade'); // El Viaje
-            $table->enum('status', ['pendiente', 'aceptada', 'rechazada'])->default('pendiente');
+            $table->foreignId('user_id')->constrained()->onDelete('cascade'); 
+            $table->foreignId('ride_id')->constrained()->onDelete('cascade'); 
+           $table->enum('status', ['pendiente', 'aceptada', 'rechazada', 'cancelada'])->default('pendiente');
             $table->timestamps();
         });
     }
