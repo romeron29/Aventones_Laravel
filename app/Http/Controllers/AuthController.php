@@ -86,8 +86,11 @@ class AuthController extends Controller
         return redirect('/');
     }
 
-    // Método para activar cuenta desde el correo
+  // Método para activar cuenta desde el correo
     public function activateAccount($userId) {
+      
+        Auth::logout();
+
         $user = User::find($userId);
 
         if (!$user) {
