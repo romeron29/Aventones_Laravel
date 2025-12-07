@@ -6,31 +6,26 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
-        Schema::create('vehiculos', function (Blueprint $table) {
-            $table->id(); // id_vehiculo INT AUTO_INCREMENT PRIMARY KEY
-            $table->foreignId('chofer_id')->constrained('usuarios')->onDelete('cascade')->onUpdate('cascade');
-            $table->string('placa', 15)->unique();
-            $table->string('marca', 25);
-            $table->string('modelo', 50);
-            $table->integer('anno');
-            $table->string('color', 30)->nullable();
-            $table->integer('capacidad_asientos');
-            $table->string('fotografia')->nullable();
-            $table->enum('estado', ['activo', 'inactivo'])->default('activo');
+       
+        Schema::create('vehicles', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade'); 
+            $table->string('placa')->unique();
+            $table->string('marca');
+            $table->string('modelo');
+            $table->integer('year');
+            $table->string('color');
+            $table->integer('capacity');
+            $table->string('photo_path')->nullable();
             $table->timestamps();
         });
     }
+    
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        Schema::dropIfExists('vehiculos');
+        Schema::dropIfExists('vehicles');
     }
 };
