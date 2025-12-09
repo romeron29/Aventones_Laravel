@@ -26,26 +26,16 @@ Route::middleware('guest')->group(function () {
 // --- RUTAS PROTEGIDAS (Solo Logueados) ---
 Route::middleware('auth')->group(function () {
 
-    // Salir
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-
-    // Panel Principal 
     Route::get('/dashboard', function () {
         $pending_reservations = [];
-
         if (Auth::user()->role == 'chofer') {
             $pending_reservations = \App\Models\Reservation::whereHas('ride', function ($q) {
                 $q->where('user_id', Auth::id());
             })->where('status', 'pendiente')->with('user', 'ride')->get();
         }
-
         return view('dashboard', compact('pending_reservations'));
     })->name('dashboard');
-
-    // Módulos Principales (CRUDs)
-    Route::resource('vehicles', VehicleController::class);
-    Route::resource('rides', RideController::class);
-
     // Rutas de Reservas (Pasajero)
     Route::post('/rides/{ride}/reserve', [ReservationController::class, 'store'])->name('reservations.store');
     Route::get('/my-reservations', [ReservationController::class, 'index'])->name('reservations.index');
@@ -58,3 +48,11 @@ Route::middleware('auth')->group(function () {
     // Ruta para ver mis viajes publicados (Chofer)
     Route::get('/my-published-rides', [RideController::class, 'myRides'])->name('rides.my_rides');
 });
+Route::middleware(['auth', 'role:chofer'])->group(function () {
+    Route::resource('vehicles', VehicleController::class);
+    Route::get('/rides/create', [RideController::class, 'create'])->name('rides.create');
+    Route::post('/rides', [RideController::class, 'store'])->name('rides.store');
+    Route::get('/my-published-rides', [RideController::class, 'myRides'])->name('rides.myRides');
+    Route::delete('/rides/{ride}', [RideController::class, 'destroy'])->name('rides.destroy');
+    }
+);
