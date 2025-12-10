@@ -96,23 +96,19 @@ class ReservationController extends Controller
     // Cancelar mi propia reserva (Pasajero)
     public function cancel(Reservation $reservation)
     {
+    if (Auth::id() !== $reservation->user_id) {
+        abort(403);
+    }
 
-        if (Auth::id() !== $reservation->user_id) {
-            abort(403);
-        }
+    if ($reservation->status == 'cancelada') {
+        return back()->with('error', 'Esta reserva ya fue cancelada.'); // Añadir mensaje de error para mejor UX
+    }
 
-        if ($reservation->status == 'cancelada') {
-            return back();
-        }
+    if (in_array($reservation->status, ['aceptada', 'pendiente'])) {
+        $reservation->ride->increment('seats_available');
+    }
+    $reservation->update(['status' => 'cancelada']);
 
-        // Si estaba aceptada, devolvemos el cupo al viaje
-        if ($reservation->status == 'aceptada') {
-            $reservation->ride->increment('seats_available');
-        }
-
-        // Cambiamos estado a cancelada
-        $reservation->update(['status' => 'cancelada']);
-
-        return back()->with('success', 'Has cancelado tu reserva.');
+    return back()->with('success', 'Has cancelado tu reserva. El asiento ha sido liberado.');
     }
 }

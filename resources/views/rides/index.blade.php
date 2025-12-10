@@ -57,40 +57,52 @@
                     </div>
 
                     <div class="d-grid">
-                        @if(Auth::user()->role == 'pasajero')
-
-                        @php
-                        // Busca la reserva específica de este usuario para este viaje
-                        $miReserva = $ride->reservations->where('user_id', Auth::id())->first();
-                        @endphp
-
-                        @if($miReserva)
-                        @if($miReserva->status == 'pendiente')
-                        <button class="btn btn-warning fw-bold text-dark" disabled>
-                            <i class="fas fa-clock me-2"></i> Pendiente de Aprobación
-                        </button>
-                        @elseif($miReserva->status == 'aceptada')
-                        <button class="btn btn-secondary fw-bold" disabled>
-                            <i class="fas fa-check-circle me-2"></i> Lugar Reservado
-                        </button>
-                        @elseif($miReserva->status == 'rechazada')
-                        <button class="btn btn-danger fw-bold" disabled>
-                            <i class="fas fa-times-circle me-2"></i> Solicitud Rechazada
-                        </button>
-                        @endif
-                        @else
-                        <form action="{{ route('reservations.store', $ride) }}" method="POST" class="form-reservar">
-                            @csrf
-                            <button type="button" class="btn btn-success fw-bold w-100 btn-reservar">
-                                <i class="fas fa-ticket-alt me-2"></i> Solicitar Lugar
-                            </button>
-                        </form>
-                        @endif
-
+                        @if(!Auth::check())
+                            <a href="{{ route('login') }}" class="btn btn-success fw-bold w-100">
+                                <i class="fas fa-sign-in-alt me-2"></i> Inicia Sesión para Reservar
+                            </a>
                         @elseif(Auth::id() == $ride->user_id)
-                        <button class="btn btn-light text-muted border" disabled>Es tu viaje</button>
+                            <button class="btn btn-light text-muted border" disabled>Es tu viaje</button>
+
+                        @elseif(Auth::user()->role == 'pasajero')
+
+                            @php
+                            $miReservaActiva = $ride->reservations
+                                                    ->where('user_id', Auth::id())
+                                                    ->whereIn('status', ['pendiente', 'aceptada'])
+                                                    ->first();
+                            $miReservaRechazada = $ride->reservations
+                                                        ->where('user_id', Auth::id())
+                                                        ->where('status', 'rechazada')
+                                                        ->first();
+                            @endphp
+
+                            @if($miReservaActiva) 
+                                @if($miReservaActiva->status == 'pendiente')
+                                <button class="btn btn-warning fw-bold text-dark" disabled>
+                                    <i class="fas fa-clock me-2"></i> Pendiente de Aprobación
+                                </button>
+                                @elseif($miReservaActiva->status == 'aceptada')
+                                <button class="btn btn-secondary fw-bold" disabled>
+                                    <i class="fas fa-check-circle me-2"></i> Lugar Reservado
+                                </button>
+                                @endif
+                            
+                            @elseif($miReservaRechazada)
+                                <button class="btn btn-danger fw-bold" disabled>
+                                    <i class="fas fa-times-circle me-2"></i> Solicitud Rechazada
+                                </button>
+                            
+                            @else
+                                <form action="{{ route('reservations.store', $ride) }}" method="POST" class="form-reservar">
+                                    @csrf
+                                    <button type="button" class="btn btn-success fw-bold w-100 btn-reservar">
+                                        <i class="fas fa-ticket-alt me-2"></i> Solicitar Lugar
+                                    </button>
+                                </form>
+                            @endif
                         @else
-                        <button class="btn btn-outline-primary" disabled>Solo pasajeros</button>
+                            <button class="btn btn-outline-primary" disabled>Solo pasajeros</button>
                         @endif
                     </div>
                 </div>

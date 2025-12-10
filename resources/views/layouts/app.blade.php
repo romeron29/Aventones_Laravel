@@ -57,6 +57,7 @@
                     @guest
                         <li class="nav-item"><a class="nav-link" href="{{ route('login') }}">Ingresar</a></li>
                         <li class="nav-item"><a class="btn btn-primary btn-sm rounded-pill px-4 ms-2 text-white" href="{{ route('register') }}">Registrarse</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ route('rides.index') }}"><i class="fas fa-search-location me-1"></i> Buscar Viajes</a></li>
                     @else
                         <li class="nav-item">
                             <form action="{{ route('logout') }}" method="POST">

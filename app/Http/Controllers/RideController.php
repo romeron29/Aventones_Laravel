@@ -15,7 +15,6 @@ class RideController extends Controller
         $rides = Ride::where('departure_time', '>=', now())
             ->orderBy('departure_time', 'asc')
             ->get();
-
         return view('rides.index', compact('rides'));
     }
 
@@ -82,7 +81,7 @@ class RideController extends Controller
 
         $rides = $user->rides()->with('vehicle')->orderBy('departure_time', 'desc')->get();
 
-        return view('rides.my_rides', compact('rides'));
+        return view('rides.index', compact('rides'));
     }
     // Cancelar/Eliminar Viaje
     public function destroy(Ride $ride)

@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\VehicleController;
 use App\Http\Controllers\RideController;
 use App\Http\Controllers\ReservationController;
+use App\Http\Controllers\AdminController;
 
 // --- PÁGINA DE INICIO (Landing Page) ---
 Route::get('/', function () {
@@ -22,6 +23,7 @@ Route::middleware('guest')->group(function () {
 
     Route::get('/activate/{user}', [AuthController::class, 'activateAccount'])->name('activate.account');
 });
+Route::get('/rides', [RideController::class, 'index'])->name('rides.index');
 
 // --- RUTAS PROTEGIDAS (Solo Logueados) ---
 Route::middleware('auth')->group(function () {
@@ -52,7 +54,21 @@ Route::middleware(['auth', 'role:chofer'])->group(function () {
     Route::resource('vehicles', VehicleController::class);
     Route::get('/rides/create', [RideController::class, 'create'])->name('rides.create');
     Route::post('/rides', [RideController::class, 'store'])->name('rides.store');
-    Route::get('/my-published-rides', [RideController::class, 'myRides'])->name('rides.myRides');
+    Route::get('/my-published-rides', [RideController::class, 'myRides'])->name('rides.my_rides');
     Route::delete('/rides/{ride}', [RideController::class, 'destroy'])->name('rides.destroy');
     }
 );
+
+Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+    
+    Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
+
+    Route::get('/users', [AdminController::class, 'userIndex'])->name('users.index');
+    
+    Route::get('/users/create-admin', [AdminController::class, 'createAdminForm'])->name('users.createAdminForm');
+    Route::post('/users/create-admin', [AdminController::class, 'storeAdmin'])->name('users.storeAdmin');
+
+    Route::post('/users/{user}/toggle-status', [AdminController::class, 'toggleStatus'])->name('users.toggleStatus');
+
+    Route::post('/run-reminder-script', [AdminController::class, 'runReminderScript'])->name('runReminderScript');
+});

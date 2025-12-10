@@ -5,7 +5,7 @@
 <div class="row">
     <div class="col-12 mb-4">
         <div class="card bg-white p-4 shadow-sm border-start border-5 border-primary">
-            <h2 class="text-primary fw-bold">¡Hola, {{ Auth::user()->name }}! 👋</h2>
+            <h2 class="text-primary fw-bold">¡Hola, {{ Auth::user()->name }}!</h2>
             <p class="text-muted mb-0">
                 Bienvenido a Aventones. Actualmente estás conectado como:
                 <span class="badge bg-secondary text-uppercase">{{ Auth::user()->role }}</span>
@@ -95,7 +95,7 @@
                 <a href="{{ route('rides.my_rides') }}" class="d-block mt-2 small text-muted text-decoration-none">Ver mis publicados</a>
             </div>
         </div>
-        @else
+        @elseif(Auth::user()->role == 'pasajero')
         <div class="col-md-4">
             <div class="card h-100 text-center p-4">
                 <div class="display-4 text-info mb-3"><i class="fas fa-search-location"></i></div>
@@ -110,6 +110,15 @@
                 <h5>Mis Reservas</h5>
                 <p class="text-muted small">Mira tus viajes pendientes.</p>
                 <a href="{{ route('reservations.index') }}" class="btn btn-outline-warning btn-sm rounded-pill">Ver Historial</a>
+            </div>
+        </div>
+        @elseif(Auth::user()->role == 'admin')
+        <div class="col-md-4">
+            <div class="card h-100 text-center p-4 border-start border-5 border-danger shadow-sm">
+                <div class="display-4 text-danger mb-3"><i class="fas fa-user-shield"></i></div>
+                <h5>Panel de Administración</h5>
+                <p class="text-muted small">Acceso a la gestión de usuarios y sistema.</p>
+                <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-danger btn-sm rounded-pill">Ir al Panel</a>
             </div>
         </div>
         @endif

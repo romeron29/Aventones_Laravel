@@ -70,13 +70,12 @@ class AuthController extends Controller
                 Auth::logout();
                 return back()->withErrors(['email' => 'Tu cuenta aún está pendiente de activación.']);
             }
-
+            
+            if (Auth::user()->role === 'admin') {
+                return redirect()->route('admin.dashboard'); 
+            }            
             return redirect()->route('dashboard');
         }
-
-        return back()->withErrors([
-            'email' => 'Las credenciales no coinciden.',
-        ]);
     }
 
     public function logout(Request $request) {
